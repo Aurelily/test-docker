@@ -1,0 +1,41 @@
+services:
+  php:
+    image: php:8.2-apache # Image officielle (https://hub.docker.com/) contenant notamment une version de Debian
+    container_name: php82 # Le nom que vous souhaitez pour votre conteneur
+    ports:
+      - 8000:80 # Le port que vous souhaitez : le port correspondant sur votre machine
+    volumes:
+      - ./my-project:/var/www/html # Chemin du dossier serveur d'apache sur Linux (vu que c'est un Debian qui est installé dans l'image php:8.2-apache)
+    build:
+      context: .
+      dockerfile: DockerFile
+
+  db:
+    image: mariadb:lts
+    container_name: mariadb
+    volumes:
+      - db_data:/var/lib/mysql
+    # Voir la doc de l'image pour toutes les variables d'environement dispo
+    environment:
+      - MARIADB_ROOT_PASSWORD=pass
+      - MARIADB_DATABASE=demo
+      - MARIADB_USER=root
+      - MARIADB_PASSWORD=pass
+    ports:
+      - "3307:3306"
+
+  phpma:
+    image: phpmyadmin/phpmyadmin # Cette notation avec le "/" permet d'avoir la dernière version de phpmyAdmin
+    container_name: phpmyadmin
+    # Voir la doc de l'image pour toutes les variables d'environement dispo
+    environment:
+      - PMA_ARBITRARY = 1
+      - PMA_HOST = db
+      - PMA_USER = MARIADB_USER
+      - PMA_PASSWORD = pass
+      - UPLOAD_LIMIT = 20M
+    ports:
+      - 8899:80
+
+volumes:
+  db_data:

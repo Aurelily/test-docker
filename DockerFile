@@ -1,0 +1,14 @@
+# Sur quelle image est ce que je veux appliquer cette config
+FROM php:8.2-apache
+
+# Mise à jour de la bibliothèque d'extension sur Linux
+# Installe et active ces extensions : mysqli pdo pdo_mysql
+RUN apt-get update && apt-get upgrade -y && \
+    docker-php-ext-install mysqli pdo pdo_mysql && \
+    docker-php-ext-enable mysqli pdo pdo_mysql
+
+# Copiez votre code source dans le conteneur
+COPY ./my-project /var/www/html
+
+# Pour exposer le post 80
+EXPOSE 80
